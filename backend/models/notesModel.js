@@ -5,6 +5,9 @@ const notesSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    summar:{
+        type:String,
+    },
     description: {
         type: String,
     },

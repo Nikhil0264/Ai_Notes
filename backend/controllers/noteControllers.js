@@ -1,4 +1,12 @@
 import Notes from "../models/notesModel.js";
+import Notes from "../models/notesModel.js";
+import { generateSummary } from "../services/summary.js";
+import { extractText } from "../utils/extractPdfText.js";
+
+
+
+
+
 
 export const uploadNotes = async(req,res)=>{
     try{
@@ -6,19 +14,23 @@ export const uploadNotes = async(req,res)=>{
         if(!title || !description){
             return res.status(400).json({message:"Provide All information"});
         }
-        const file = req.file;
+        const file = req.file.path;
         const id = req.user.id;
+         const text = extractText(file); //may erro occur here
+        const summary = generateSummary(text);
         const notes = await Notes.create({
-            title,description,fileUrl:file.path,createdBy:id
+            title,summary,description,fileUrl:file,createdBy:id
         })
         return res.status(201).json({
             message:"pdf upload successfully",
+            notes
         })
     }catch(error){
         console.log(error);
         return res.status(500),json({message:"Error in uploading notes",error:error.message})
     }
 }
+
 
 export const getAllNotes = async(req,res)=>{
     try{

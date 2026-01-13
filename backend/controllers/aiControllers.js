@@ -1,5 +1,7 @@
 import Notes from "../models/notesModel.js";
+import { generateSummary } from "../services/summary.js";
 import { extractText } from "../utils/extractPdfText.js";
+
 
 export const chatWithAi = async(req,res)=>{
     try{
@@ -13,12 +15,11 @@ export const chatWithAi = async(req,res)=>{
         if(!note){
             return res.status(400).json({message:"Corresponding notes as not found"})
         }
-        const fileUrl = note.fileUrl;
-        const text = extractText(fileUrl);
-        const answer = askQuestionFromNotes(text,question);
+        const answer = askQuestionFromNotes(note.summary,question);
         return res.status(201).json({answer})
     }catch(error){
         console.log(error);
         return res.status(500).json({message:"Gemini failed to Load",error:error.message});
     }
 }
+

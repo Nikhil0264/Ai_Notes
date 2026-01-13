@@ -3,25 +3,20 @@ import { AI_API_KEY } from "../env";
 
 const genAI = new GoogleGenerativeAI(AI_API_KEY);
 
-export const askQuestionFromNotes = async (notesText, question) => {
+export const generateSummary = async (text) => {
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash"
   });
 
   const prompt = `
-You are an AI assistant.
-Answer ONLY from the provided notes.
-If the answer is not in the notes, say "Not found in notes".
+Summarize the following notes clearly.
+Focus on definitions, key points and explanations.
+Keep it concise.
 
 NOTES:
-${notesText}
-
-QUESTION:
-${question}
+${text.slice(0, 12000)}
 `;
 
   const result = await model.generateContent(prompt);
-  const response = result.response.text();
-
-  return response;
+  return result.response.text();
 };

@@ -8,4 +8,5 @@ const notesRouter = express.Router();
 
 notesRouter.post("/upload_notes",Protect,adminOnly,upload.single("file"),uploadNotes)
 notesRouter.post("/chat",Protect,chatWithAi)
+// notesRouter.post("/quiz/:noteId",Protect) for quizzes
 export default notesRouter;
