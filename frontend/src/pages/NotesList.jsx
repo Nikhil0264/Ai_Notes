@@ -9,6 +9,7 @@ function NotesList() {
   const [isSwapped, setIsSwapped] = useState(
   () => JSON.parse(localStorage.getItem("swapLayout")) || false
   );
+  const [selectedNote, setSelectedNote] = useState(null);
 
   const [state,setState] = useState(null)
   const { role } = useAuth();
@@ -183,24 +184,39 @@ useEffect(() => {
               )}
 
 
-               <div className="flex justify-between items-center text-xs text-gray-500 mt-3">
-                <span>📅 {new Date(note.createdAt).toLocaleDateString()}</span>
-                            <div className="flex gap-3">
-                              <button
-                          onClick={() => {
-                            setState(true)
-                          }}
-                          className="mt-3 text-green-600 hover:underline"
-                        >
-                          See
-                        </button>
-                  <button className="text-red-500 hover:underline">Delete</button>
-                </div>
-              </div>
-                  
+              <button
+                  onClick={() => {
+                    setSelectedNote(note);
+                    setState(true); // show PDF + Chat panel
+                  }}
+                  className="mt-3 text-green-600 hover:underline"
+                >
+                  See
+                </button>      
             </div>
           ))}
-          {state ? <Pdf /> : <ChatAi />}
+          {state && (
+            <div className="fixed inset-0 bg-gray-100 bg-opacity-95 z-50 flex flex-col md:flex-row">
+              {/* Left: PDF Viewer */}
+              <div className="md:w-2/3 w-full p-4">
+                <Pdf fileUrl={selectedNote?.fileUrl} />
+              </div>
+
+              {/* Right: AI Chat */}
+              <div className="md:w-1/3 w-full p-4 border-l border-gray-300">
+                <ChatAi />
+              </div>
+
+              {/* Close Button */}
+    <button
+      className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+      onClick={() => setState(false)}
+    >
+      Close
+    </button>
+  </div>
+)}
+
 
         </div>
       )}

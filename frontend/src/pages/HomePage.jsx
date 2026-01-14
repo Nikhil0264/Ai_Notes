@@ -12,9 +12,11 @@ function HomePage() {
           Organize, search, and manage your learning notes efficiently with a clean, modern interface.
         </p>
         <div className="flex justify-center gap-4">
+          <Link to='/allNotes'>
           <button className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition">
-            Get Started
+            See all Notes
           </button>
+          </Link>
           <button className="bg-transparent border border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition">
             Learn More
           </button>

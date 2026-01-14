@@ -50,9 +50,8 @@ export const uploadNotes = async (req, res) => {
 
 export const getAllNotes = async(req,res)=>{
     try{
-      console.log("notes are comming")
         const notes = await Notes.find().select("-__v");
-        console.log(notes)
+
         const notesData = notes.map(note => ({
           id: note._id,
           title: note.title,  
