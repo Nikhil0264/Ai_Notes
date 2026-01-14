@@ -2,7 +2,7 @@ import express from 'express';
 import { adminOnly, Protect } from '../middlewares/authMiddlewares.js';
 import { allNotes } from '../controllers/userControllers.js';
 import { uploadNotes } from '../controllers/noteControllers.js';
-import upload from '../middlewares/multer.js';
+import upload from '../middlewares/upload.js';
 import { chatWithAi } from '../controllers/aiControllers.js';
 const notesRouter = express.Router();
 

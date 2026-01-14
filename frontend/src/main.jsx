@@ -9,12 +9,18 @@ import NotesList from './pages/NotesList.jsx'
 import Layout from './Layout.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import Register from './pages/Register.jsx'
+import HomePage from './pages/HomePage.jsx'
+import Pdf from './components/Pdf.jsx'
 
 const router = createBrowserRouter([
   {
     path:'/',
     element:<Layout/>,
     children:[
+      {
+        index: true, 
+        element: <HomePage />
+      },
       {
           path:'/login',
           element:<Login/>
@@ -29,7 +35,13 @@ const router = createBrowserRouter([
         },
         {
           path:'/allNotes',
-          element:<NotesList/>
+          element:<NotesList/>,
+          children:[
+            {
+              path:":id/chat",
+              element:<Pdf/>
+            },
+          ]
         }
     ]
   }

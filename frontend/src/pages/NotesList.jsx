@@ -1,12 +1,40 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext.jsx";
+import { Link } from "react-router-dom";
+import Pdf from "../components/Pdf.jsx";
+import ChatAi from "../components/ChatAi.jsx";
 
 function NotesList() {
+  const [isSwapped, setIsSwapped] = useState(
+  () => JSON.parse(localStorage.getItem("swapLayout")) || false
+  );
+
+  const [state,setState] = useState(null)
+  const { role } = useAuth();
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [isLoading, setIsLoading] = useState(false);
+
+
+
+  useEffect(() => {
+  const handleKey = (e) => {
+    if (e.key.toLowerCase() === "s") {
+      setIsSwapped(prev => !prev);
+    }
+  };
+
+  window.addEventListener("keydown", handleKey);
+  return () => window.removeEventListener("keydown", handleKey);
+}, []);
+
+
+useEffect(() => {
+  localStorage.setItem("swapLayout", JSON.stringify(isSwapped));
+}, [isSwapped]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -14,14 +42,12 @@ function NotesList() {
     api
       .get("/user/all_notes")
       .then((res) => {
-        setNotes(res.data);
-        setFilteredNotes(res.data);
+        setNotes(Array.isArray(res.data.notes) ? res.data.notes : []);
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
   }, []);
 
-  /* Search + Sort */
   useEffect(() => {
     let temp = [...notes];
 
@@ -29,7 +55,7 @@ function NotesList() {
       temp = temp.filter(
         (note) =>
           note.title.toLowerCase().includes(search.toLowerCase()) ||
-          note.content.toLowerCase().includes(search.toLowerCase())
+          note.description.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -39,12 +65,11 @@ function NotesList() {
         : new Date(a.createdAt) - new Date(b.createdAt)
     );
 
-   
+    setFilteredNotes(temp);
   }, [search, sort, notes]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
-      
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -55,7 +80,7 @@ function NotesList() {
         </div>
 
         {/* Controls */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           <input
             type="text"
             placeholder="Search notes..."
@@ -74,6 +99,17 @@ function NotesList() {
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
           </select>
+
+          {role === "admin" && (
+            <Link to="/admin">
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg
+                         hover:bg-blue-700 transition ml-4"
+              >
+                Upload Note
+              </button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -100,38 +136,72 @@ function NotesList() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredNotes.map((note) => (
             <div
-              key={note.id}
+              key={note._id}
               className="bg-white rounded-2xl border border-gray-200 p-6
                          shadow-md hover:shadow-xl transition"
             >
-              {/* Title */}
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {note.title}
               </h3>
+              <p className="text-sm text-gray-600 mb-4">{note.description}</p>
 
-              {/* Content */}
-              <p className="text-sm text-gray-600 line-clamp-3 mb-4">
-                {note.content}
-              </p>
+              {/* PDF Preview */}
+              {note.fileUrl && (
+                <iframe
+                  src={note.fileUrl}
+                  width="100%"
+                  height="300px"
+                  className="border rounded mb-2"
+                  title={note.title}
+                ></iframe>
+              )}
 
-              {/* Footer */}
-              <div className="flex justify-between items-center text-xs text-gray-500">
-                <span>
-                  📅 {new Date(note.createdAt).toLocaleDateString()}
-                </span>
+              {/* Download PDF */}
+              {note.fileUrl && (
+                <button
+            onClick={async () => {
+              try {
+                const res = await fetch(note.fileUrl);
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${note.title}.pdf`; // filename
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+              } catch (err) {
+                console.error("Download failed:", err);
+              }
+            }}
+            className="inline-block mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Download PDF
+              </button>
 
-                {/* Actions */}
-                <div className="flex gap-3">
-                  <button className="text-blue-600 hover:underline">
-                    Edit
-                  </button>
-                  <button className="text-red-500 hover:underline">
-                    Delete
-                  </button>
+              )}
+
+
+               <div className="flex justify-between items-center text-xs text-gray-500 mt-3">
+                <span>📅 {new Date(note.createdAt).toLocaleDateString()}</span>
+                            <div className="flex gap-3">
+                              <button
+                          onClick={() => {
+                            setState(true)
+                          }}
+                          className="mt-3 text-green-600 hover:underline"
+                        >
+                          See
+                        </button>
+                  <button className="text-red-500 hover:underline">Delete</button>
                 </div>
               </div>
+                  
             </div>
           ))}
+          {state ? <Pdf /> : <ChatAi />}
+
         </div>
       )}
     </div>
@@ -139,3 +209,5 @@ function NotesList() {
 }
 
 export default NotesList;
+
+

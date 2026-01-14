@@ -18,7 +18,7 @@ function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
       login(res.data.token, res.data.user.role);
-      navigate("/dashboard");
+      navigate("/allnotes");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
     } finally {

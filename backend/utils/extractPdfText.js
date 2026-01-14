@@ -1,16 +1,25 @@
-import axios from "axios"
-import pdf from "pdf-parse";
+import fs from "fs";
+import pdfjsLib from "pdfjs-dist/legacy/build/pdf.js"; 
 
-export const extractText = async(fileUrl)=>{
-    try{
-        const response = await axios.get(fileUrl,{
-            responseType: "arraybuffer"
-        })
-        const pdfBuffer = Buffer.from(response.data);
-        const data = await pdf(pdfBuffer);
-        return data.text;
-    }catch(error){
-        console.log(error);
-        return res.status(500).json({message:"Error while sending to Ai",error:error.message});
+const { getDocument } = pdfjsLib; 
+
+export const extractText = async (filePath) => {
+  try {
+    const data = new Uint8Array(fs.readFileSync(filePath));
+    const pdf = await getDocument({ data }).promise;
+
+    let fullText = "";
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const strings = content.items.map(item => item.str);
+      fullText += strings.join(" ") + "\n";
     }
-}
+
+    return fullText;
+  } catch (error) {
+    console.error("Error extracting PDF text:", error);
+    throw error;
+  }
+};

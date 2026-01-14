@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function AdminDashboard() {
   const { role } = useAuth();
@@ -8,6 +9,7 @@ function AdminDashboard() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
 
+  const navigate = useNavigate()
   if (role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -27,12 +29,15 @@ function AdminDashboard() {
     formData.append("file", file);
 
     try {
-      await api.post("/notes", formData);
+      await api.post("/upload_notes", formData);
       alert("Note uploaded successfully");
+      
       setTitle("");
       setDescription("");
       setFile(null);
+      navigate('/allNotes')
     } catch (error) {
+      console.log(error)
       alert("Upload failed");
     }
   };

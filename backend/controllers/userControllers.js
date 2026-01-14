@@ -5,7 +5,7 @@ import { JWTSECRET } from "../env.js";
 
 export const registerUser = async(req,res)=>{
     try{
-        const {name,email,password} = req.body;
+        const {name,email,password,role} = req.body;
         if(!name || !email || !password){
             return res.status(400).json({message:"Provide All Credentials"})
         }
@@ -15,7 +15,7 @@ export const registerUser = async(req,res)=>{
         }
         const hassedPassword = await bcrypt.hash(password,10);
         const newUser = await User.create({
-            name,email,password:hassedPassword
+            name,email,password:hassedPassword,role
         });
         return res.status(200).json({message:"Registration Successfull",
             user:newUser

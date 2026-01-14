@@ -1,44 +1,69 @@
+import fs from "fs";
 import Notes from "../models/notesModel.js";
-import Notes from "../models/notesModel.js";
-import { generateSummary } from "../services/summary.js";
 import { extractText } from "../utils/extractPdfText.js";
+import { generateSummary } from "../services/summary.js";
+import { uploadPdfToCloudinary } from "../middlewares/cloudlink.js";
 
+export const uploadNotes = async (req, res) => {
+  try {
+    const { title, description } = req.body;
 
-
-
-
-
-export const uploadNotes = async(req,res)=>{
-    try{
-        const {title,description} = req.body;
-        if(!title || !description){
-            return res.status(400).json({message:"Provide All information"});
-        }
-        const file = req.file.path;
-        const id = req.user.id;
-         const text = extractText(file); //may erro occur here
-        const summary = generateSummary(text);
-        const notes = await Notes.create({
-            title,summary,description,fileUrl:file,createdBy:id
-        })
-        return res.status(201).json({
-            message:"pdf upload successfully",
-            notes
-        })
-    }catch(error){
-        console.log(error);
-        return res.status(500),json({message:"Error in uploading notes",error:error.message})
+    if (!title || !description || !req.file) {
+      return res.status(400).json({ message: "All fields required" });
     }
-}
+
+    const localPath = req.file.path;
+    const userId = req.user.id;
+
+
+    const text = await extractText(localPath);
+    // const summary = await generateSummary(text);
+    const cloudinaryUrl = await uploadPdfToCloudinary(localPath);
+
+
+    fs.unlinkSync(localPath);
+
+  
+    const note = await Notes.create({
+      title,
+      description,
+      // summary,
+      fileUrl: cloudinaryUrl,
+      createdBy: userId,
+    });
+
+    return res.status(201).json({
+      message: "PDF uploaded successfully",
+      note,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Upload failed",
+      error: error.message,
+    });
+  }
+};
+
+
 
 
 export const getAllNotes = async(req,res)=>{
     try{
+      console.log("notes are comming")
         const notes = await Notes.find().select("-__v");
+        console.log(notes)
+        const notesData = notes.map(note => ({
+          id: note._id,
+          title: note.title,  
+          description: note.description,
+          fileUrl: note.fileUrl,
+          createdAt: note.createdAt,
+        }));
         return res.status(200).json({
             success: true,
             count: notes.length,
-            notes
+            notes:notesData,
         });
     }catch(error){
         console.log(error)
