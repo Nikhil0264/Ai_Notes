@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
-import { ENV } from '../env.js';
+import { AI_API_KEY } from '../env.js';
 
-const ai = new GoogleGenAI({ apiKey: ENV.AI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: AI_API_KEY });
 
 export const generateAnswer = async (req, res) => {
   const { message } = req.body; 

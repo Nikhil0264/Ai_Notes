@@ -1,71 +1,80 @@
 import React, { useState } from "react";
 import api from "../services/api";
 
-
-
 function ChatAi() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const send = async () => {
-  if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
-  setMessages((prev) => [...prev, { from: "user", text: input }]);
-  console.log(input)
-  setInput("");
-  setLoading(true);
+    const userMessage = input;
 
-  try {
-    const res = await api.post('/chat', { message: input }); 
-    const data = res.data; 
+    setMessages((prev) => [...prev, { from: "user", text: userMessage }]);
+    setInput("");
+    setLoading(true);
 
-    setMessages((prev) => [...prev, { from: "user", text: input }, { from: "ai", text: data.text }]);
-  } catch (err) {
-    console.log(err)
-    setMessages((prev) => [...prev, { from: "user", text: input }, { from: "ai", text: "Error generating response" }]);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const res = await api.post("/chat", { message: userMessage });
+      setMessages((prev) => [
+        ...prev,
+        { from: "ai", text: res.data.text }
+      ]);
+    } catch (err) {
+      console.log(err);
+      setMessages((prev) => [
+        ...prev,
+        { from: "ai", text: "⚠️ Error generating response" }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-gradient-to-br from-slate-100 to-slate-200">
+      
+      {/* Header */}
+      <div className="p-4 font-semibold text-lg bg-white shadow">
+        🤖 AI Chat
+      </div>
+
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`p-2 rounded ${
-              m.from === "user"
-                ? "bg-blue-500 text-white text-right"
-                : "bg-gray-200 text-gray-900 text-left"
-            }`}
+            className={`max-w-[75%] px-4 py-2 rounded-2xl shadow
+              ${m.from === "user"
+                ? "ml-auto bg-blue-600 text-white rounded-br-none"
+                : "mr-auto bg-white text-gray-800 rounded-bl-none"
+              }`}
           >
             {m.text}
           </div>
         ))}
 
         {loading && (
-          <div className="p-2 rounded bg-gray-200 text-gray-900">
-            AI is typing...
+          <div className="mr-auto bg-white px-4 py-2 rounded-2xl shadow animate-pulse">
+            AI is typing…
           </div>
         )}
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t flex gap-2">
+      <div className="p-3 bg-white border-t flex gap-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask something..."
-          className="flex-1 border px-2 py-1 rounded"
+          className="flex-1 px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400"
           onKeyDown={(e) => e.key === "Enter" && send()}
         />
         <button
           onClick={send}
-          className="bg-blue-600 text-white px-4 rounded"
           disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-full disabled:opacity-50"
         >
           Send
         </button>

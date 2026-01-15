@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import Register from './pages/Register.jsx'
 import HomePage from './pages/HomePage.jsx'
 import Pdf from './components/Pdf.jsx'
+import Dashboard from './pages/Dashboard.jsx'
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
         {
           path:'/register',
           element:<Register/>
+        },
+        {
+          path:'/dashboard',
+          element:<Dashboard/>
         },
         {
           path:'/admin',

@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+// const BASE_URL = "https://ai-notes-tf5p.onrender.com/api"
 const api = axios.create({
     baseURL:"http://localhost:3000/api",
 })
