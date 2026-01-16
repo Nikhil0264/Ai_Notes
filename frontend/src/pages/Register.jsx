@@ -33,7 +33,7 @@ const Register = () => {
       return;
     }
 
-    if (role === "admin" && adminSecret != "Nikhil@123") {
+    if (role === "admin" && adminSecret != import.meta.env.VITE_ADMIN_SECRET) {
       alert("Admin secret is required!");
       return;
     }

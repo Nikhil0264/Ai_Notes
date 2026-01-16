@@ -13,8 +13,8 @@ const Sidebar = () => {
           className="w-12 h-12 rounded-full"
         />
         <div>
-          <h2 className="font-semibold">      Nikhil Padul</h2>
-          <p className="text-sm text-blue-300">     Frontend Dev</p>
+          <h2 className="font-semibold"> User</h2>
+          <p className="text-sm text-blue-300"> Notes </p>
         </div>
       </div>
 

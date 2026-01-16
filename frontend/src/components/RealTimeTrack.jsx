@@ -30,6 +30,7 @@ const RealTimeTrack = () => {
         <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
         <ul className="space-y-3 text-blue-200">
           <li>✅ Todo “Learn React Context” completed</li>
+          
           <li>📝 New Todo added: “Build Dashboard UI”</li>
           <li>🔄 Todo updated: “Fix MongoDB Error”</li>
         </ul>
