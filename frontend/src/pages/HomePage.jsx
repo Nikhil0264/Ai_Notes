@@ -17,9 +17,11 @@ function HomePage() {
             See all Notes
           </button>
           </Link>
-          <button className="bg-transparent border border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition">
-            Learn More
+            <Link to='/dashboard'>
+              <button className="bg-transparent border border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition">
+            Your activity
           </button>
+            </Link>
         </div>
       </section>
 

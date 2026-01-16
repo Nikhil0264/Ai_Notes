@@ -7,7 +7,9 @@ import { uploadPdfToCloudinary } from "../middlewares/cloudlink.js";
 export const uploadNotes = async (req, res) => {
   try {
     const { title, description } = req.body;
-
+    console.log(title)
+    console.log(req.file)
+    console.log(description)
     if (!title || !description || !req.file) {
       return res.status(400).json({ message: "All fields required" });
     }
@@ -51,7 +53,7 @@ export const uploadNotes = async (req, res) => {
 export const getAllNotes = async(req,res)=>{
     try{
         const notes = await Notes.find().select("-__v");
-
+        console.log(notes)
         const notesData = notes.map(note => ({
           id: note._id,
           title: note.title,  

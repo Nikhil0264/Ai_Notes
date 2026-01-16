@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
@@ -19,7 +20,9 @@ const Sidebar = () => {
 
       {/* Menu */}
       <div className="flex-1 p-4 space-y-3">
-        <SidebarBtn label="📒 All Notes" />
+        <Link to="/allNotes">
+          <SidebarBtn label="📒 All Notes" />
+        </Link>
         <SidebarBtn label="⭐ Favorites" />
         <SidebarBtn label="📁 Archive" />
         <SidebarBtn label="📊 Analytics" />
