@@ -1,7 +1,7 @@
 import axios from 'axios'
-// const BASE_URL = "https://ai-notes-tf5p.onrender.com/api"
+
 const api = axios.create({
-    baseURL:"https://ai-notes-tf5p.onrender.com/api",
+    baseURL:`${import.meta.env.VITE_API_URL}/api`
 })
 
 api.interceptors.request.use(
