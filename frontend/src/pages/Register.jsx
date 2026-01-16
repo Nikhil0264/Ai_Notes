@@ -33,6 +33,12 @@ const Register = () => {
       return;
     }
 
+    if (role === "admin" && adminSecret != "Nikhil@123") {
+      alert("Admin secret is required!");
+      return;
+    }
+
+    
     try {
       await api.post("/auth/register", {
         name,
@@ -41,7 +47,7 @@ const Register = () => {
         password,
       });
       alert("Registered successfully 🎉");
-      navigate("/");
+      navigate("/login");
     } catch (err) {
         console.log(err)
       alert(err.response?.data?.message || "Registration failed");
