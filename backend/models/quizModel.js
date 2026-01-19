@@ -1,8 +1,8 @@
 import mongoose, { Types } from 'mongoose';
 
-const quizSchema = mongoose.Schema({
+const quizSchema = new mongoose.Schema({
     noteId:{
-        type:Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Notes"
     },
     questions:[],

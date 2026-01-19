@@ -1,6 +1,6 @@
 import mongoose, { Types } from 'mongoose';
 
-const notesSchema = mongoose.Schema({
+const notesSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
@@ -16,7 +16,7 @@ const notesSchema = mongoose.Schema({
         required: true,
     },
     createdBy: {
-        type: Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
     createdAt: {
